@@ -145,14 +145,14 @@ class UNet(nn.Module):
         )
 
     
-    def encode(self, x):
+    def _forward(self, x):
         stage_1 = self.down_1(x)
         stage_2 = self.down_2(self.downsample(stage_1))
         stage_3 = self.down_3(self.downsample(stage_2))
         stage_4 = self.down_4(self.downsample(stage_3))
 
         bn = self.bn(self.downsample(stage_4))
-
+        
         stage_4 = self.up_4(torch.cat([stage_4, self.upsample_4(bn)], dim=1))
         stage_3 = self.up_3(torch.cat([stage_3, self.upsample_3(stage_4)], dim=1))
         stage_2 = self.up_2(torch.cat([stage_2, self.upsample_2(stage_3)], dim=1))
@@ -160,5 +160,16 @@ class UNet(nn.Module):
         
         return stage_1
     
+    def encode(self, x):
+        y = self._forward(x)
+        pool = nn.AvgPool2d(
+            kernel_size=y.shape[-2:],
+            stride=None,
+            padding=0,
+        )
+        return pool(y)
+    
     def forward(self, x):
-        return self.seg(self.encode(x))
+        stage_1 = self._forward(x)
+
+        return self.seg(stage_1)
