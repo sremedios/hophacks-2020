@@ -54,5 +54,5 @@ def center_vol_plot(img_vol, target_shape=None):
    
     multiplot(
         [x, y, z],
-        ['Axial','Sagittal','Coronal'],
+        ['Sagittal','Coronal','Axial'],
     )
