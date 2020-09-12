@@ -1,18 +1,23 @@
-
 async function runExample() {
-	
-  console.log("Hello")
+
   // Create an ONNX inference session with default backend.
   const session = new onnx.InferenceSession();
-  // Load an ONNX model. This model is Resnet50 that takes a 1*3*224*224 image and classifies it.
-  await session.loadModel("../models/covid_detect.onnx");
-
-  const x = new Float32Array(1 * 1 * 512 * 512).fill(1);
-  const tensorX = new onnx.Tensor(x, 'float32', [1, 1, 512, 512]);
+  
+  // Load model
+  const model_url = "../models/covid_detect.onnx"
+  await session.loadModel(model_url);
+  
+  const input_img = [
+	new onnx.Tensor(
+		new Float32Array(1 * 1 * 512 * 512).fill(1), 
+		"float32", 
+		[1, 1, 512, 512],
+	),
+  ];
 
   // Run model with Tensor inputs and get the result by output name defined in model.
-  const outputMap = await session.run([tensorX]);
-  const outputData = outputMap.get('sum');
+  const outputMap = await session.run(input_img);
+  const outputData = outputMap.values().next().value;
 
   console.log("Hello")
 
