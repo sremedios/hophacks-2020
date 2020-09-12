@@ -18,27 +18,23 @@ class CTSlices(Dataset):
         mask = nib.load(self.mask_fpaths[i]).get_fdata(dtype=np.float32)
         
         ct = self.norm(ct)
-        
-        if self.pos:
-            ct_slice, mask_slice = get_pos_slice(ct, mask)
-        else:
-            ct_slice, mask_slice = get_neg_slice(ct, mask)
+        ct_slice, mask_slice = get_slice(ct, mask, self.pos)
         self.pos = not self.pos
         
         return ct_slice, mask_slice
     
-def get_pos_slice(ct, mask):
-    for ct_slice, mask_slice in zip(ct.transpose(2, 0, 1), mask.transpose(2, 0, 1)):
-        if mask_slice.sum() > 0:
-            return ct_slice, mask_slice
-
-def get_neg_slice(ct, mask):
-    for ct_slice, mask_slice in zip(ct.transpose(2, 0, 1), mask.transpose(2, 0, 1)):
-        if mask_slice.sum() == 0:
-            return ct_slice, mask_slice
-                                        
-            
+def get_slice(ct, mask, is_pos):
+    i = np.random.randint(0, ct.shape[-1])
     
+    if is_pos:
+        while mask[..., i].sum() == 0:
+            i = np.random.randint(0, mask.shape[-1])
+    else:
+        while mask[..., i].sum() != 0:
+            i = np.random.randint(0, mask.shape[-1])
+    return ct[..., i], mask[..., i]
+
+
 class Normalize:
     def __init__(self):
         self.squash_min = 0
