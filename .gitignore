@@ -1,6 +1,9 @@
 **/*.h5
 data/
 OT-Flow
+**/*.onnx
+weights/
+webapp/
 
 
 # Byte-compiled / optimized / DLL files
