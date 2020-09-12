@@ -4,9 +4,6 @@ import time
 from IPython import display
 from PIL import Image
 
-plt.rcParams['figure.figsize'] = (10, 10)
-plt.rcParams['image.cmap'] = 'Greys_r'
-plt.rcParams['image.interpolation'] = 'nearest'
 
 def multiplot(imgs, titles=None, vmin=None, vmax=None):
     fig, axs = plt.subplots(1, len(imgs))
